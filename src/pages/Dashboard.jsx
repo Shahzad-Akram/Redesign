@@ -10,32 +10,32 @@ import { BiCalendarEvent, BiMenu } from 'react-icons/bi';
 
 const Dashboard = ({ onClick, ariaExpanded }) => {
 
-  const { resultSet, isLoading, error, progress } = useCubeQuery({
+  // const { resultSet, isLoading, error, progress } = useCubeQuery({
 
-    "measures": [
-      "Physician.countTopdoctor"
+  //   "measures": [
+  //     "Physician.countTopdoctor"
       
-      ],
+  //     ],
       
-      "timeDimensions": [],
-      "order": {}
+  //     "timeDimensions": [],
+  //     "order": {}
 
-  })
+  // })
   
-  if (isLoading) {
-    return <div>{progress && progress.stage && progress.stage.stage || 'Loading...'}</div>;
-  }
+  // if (isLoading) {
+  //   return <div>{progress && progress.stage && progress.stage.stage || 'Loading...'}</div>;
+  // }
 
-  if (error) {
-    return <div>{error.toString()}</div>;
-  }
+  // if (error) {
+  //   return <div>{error.toString()}</div>;
+  // }
 
-  if (!resultSet) {
-    return null;
-  }
-  const dataSource = resultSet.tablePivot();
-  const columns = resultSet.tableColumns();
-  console.log(dataSource, columns)
+  // if (!resultSet) {
+  //   return null;
+  // }
+  // const dataSource = resultSet.tablePivot();
+  // const columns = resultSet.tableColumns();
+  // console.log(dataSource, columns)
 
 
   return (
