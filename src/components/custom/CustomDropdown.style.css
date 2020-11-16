@@ -1,0 +1,17 @@
+.dropdown-menu {
+  top: 3px !important;
+  left: 5px !important;
+  min-width: 8rem;
+}
+
+.dropdown-menu::before {
+  content: '';
+  background-color: #fff;
+  display: flex;
+  height: 12px;
+  width: 12px;
+  position: absolute;
+  top: -7px;
+  right: 19px;
+  transform: rotate(45deg);
+}

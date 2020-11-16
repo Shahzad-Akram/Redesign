@@ -1,0 +1,44 @@
+.scrollbox-auto {
+  overflow: auto;
+}
+
+.scrollbox-auto::-webkit-scrollbar {
+  background-color: transparent;
+  width: 10px;
+}
+
+.scrollbox-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.scrollbox {
+  overflow-y: scroll;
+}
+
+.scrollbox::-webkit-scrollbar {
+  background-color: transparent;
+  width: 5px;
+  opacity: 0;
+}
+
+.scrollbox:hover::-webkit-scrollbar {
+  opacity: 1;
+}
+
+.scrollbox:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+@media (hover: none) {
+  .scrollbox-auto::-webkit-scrollbar {
+    background-color: transparent;
+    width: 5px;
+  }
+
+  .scrollbox::-webkit-scrollbar {
+    width: 3px !important;
+  }
+  .scrollbox::-webkit-scrollbar-thumb {
+    background-color: unset;
+  }
+}
