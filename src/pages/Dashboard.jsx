@@ -1,8 +1,8 @@
 import { Col, Row, Button } from 'react-bootstrap';
+import React, {useState} from 'react'
 import CustomDropdown from '../components/custom/CustomDropdown';
 import MyChart from '../components/chart/my-chart';
-import { useCubeQuery }  from '@cubejs-client/react';
-import cubejs from "@cubejs-client/core";
+import { QueryRenderer } from '@cubejs-client/react';
 // Icons
 import { BiCalendarEvent, BiMenu } from 'react-icons/bi';
 
@@ -10,32 +10,7 @@ import { BiCalendarEvent, BiMenu } from 'react-icons/bi';
 
 const Dashboard = ({ onClick, ariaExpanded }) => {
 
-  // const { resultSet, isLoading, error, progress } = useCubeQuery({
-
-  //   "measures": [
-  //     "Physician.countTopdoctor"
-      
-  //     ],
-      
-  //     "timeDimensions": [],
-  //     "order": {}
-
-  // })
-  
-  // if (isLoading) {
-  //   return <div>{progress && progress.stage && progress.stage.stage || 'Loading...'}</div>;
-  // }
-
-  // if (error) {
-  //   return <div>{error.toString()}</div>;
-  // }
-
-  // if (!resultSet) {
-  //   return null;
-  // }
-  // const dataSource = resultSet.tablePivot();
-  // const columns = resultSet.tableColumns();
-  // console.log(dataSource, columns)
+  const [show, setShow] = useState(false)
 
 
   return (
@@ -84,22 +59,112 @@ const Dashboard = ({ onClick, ariaExpanded }) => {
       <section className='height-scroll scrollbox'>
         <Row className='mx-0'>
           <Col className='mb-4 mb-lg-0'>
-            <div className='view-box bg-gradient-success text-center py-3 mb-3 border rounded-lg-2 shadow-sm'>
-              <h4>334.19k</h4>
+          <QueryRenderer
+      query={{
+        "measures": [                                               
+        "Session.NumberOfSession"                                  
+        ],                                                           
+        "timeDimensions": [                                          
+          {                                                          
+            "dimension": "Session.createdAt"                         
+          }                                                          
+        ],                                                           
+        "order": {},                                                 
+        "filters": []    
+        
+        }   }
+      render={({ resultSet }) => {
+        if (!resultSet) {
+          return 'Loading...';
+        }
+
+        return (
+          
+          <div className='view-box bg-gradient-success text-center py-3 mb-3 border rounded-lg-2 shadow-sm'>
+            <h4>{resultSet.loadResponse.results[0].data[0]["Session.NumberOfSession"]}</h4>
               <div>Visitors</div>
             </div>
-            <div className='view-box bg-gradient-primary text-center py-3 mb-3  border rounded-lg-2 shadow-sm'>
-              <h4>1.93k</h4>
+        );
+      }}
+    />
+    <QueryRenderer
+      query={{
+        "measures": [
+          "NewPatients.TotalNewPatient"
+        ],
+        "timeDimensions": [
+          {
+            "dimension": "NewPatients.EventDate"
+          }
+        ],
+        "order": {
+          "NewPatients.EventDate": "asc"
+        },
+        "filters": []
+      }}
+      render={({ resultSet }) => {
+        if (!resultSet) {
+          return 'Loading...';
+        }
+        return(
+          <div className='view-box bg-gradient-primary text-center py-3 mb-3  border rounded-lg-2 shadow-sm'>
+            <h4>{resultSet.loadResponse.results[0].data[0]["NewPatients.TotalNewPatient"]}</h4>
               <div>New Patients</div>
             </div>
-            <div className='view-box bg-gradient-primary text-center py-3 mb-3  border rounded-lg-2 shadow-sm'>
-              <h4>477</h4>
+        )
+      }}
+      />
+      <QueryRenderer
+      query={{
+        "measures": [
+          "Patients.TotalPatient"
+        ],
+        "timeDimensions": [
+          {
+            "dimension": "Patients.EventDate"
+          }
+        ],
+        "order": {},
+        "filters": []
+      }}
+      render={({ resultSet }) => {
+        if (!resultSet) {
+          return 'Loading...';
+        }
+        return(
+          <div className='view-box bg-gradient-primary text-center py-3 mb-3  border rounded-lg-2 shadow-sm'>
+            <h4>{resultSet.loadResponse.results[0].data[0]["Patients.TotalPatient"]}</h4>
               <div>Existing Patients</div>
             </div>
-            <div className='view-box bg-gradient-danger text-center py-3 border rounded-lg-2 shadow-sm'>
+        )
+      }}
+      />
+      <QueryRenderer
+      query={{
+        "measures": [
+          "Patients.TotalPatient"
+        ],
+        "timeDimensions": [
+          {
+            "dimension": "Patients.EventDate"
+          }
+        ],
+        "order": {},
+        "filters": []
+      }}
+      render={({ resultSet }) => {
+        if (!resultSet) {
+          return 'Loading...';
+        }
+        return(
+          <div className='view-box bg-gradient-danger text-center py-3 border rounded-lg-2 shadow-sm'>
               <h4>20</h4>
               <div>MyChart Logins</div>
             </div>
+        )
+      }}
+      />
+            
           </Col>
           <Col lg={6} className='mb-4 mb-lg-0'>
             <div className='h-100 w-100 bg-white rounded-lg-2 shadow p-3'>
@@ -120,36 +185,54 @@ const Dashboard = ({ onClick, ariaExpanded }) => {
                 <div className='table-responsive px-3'>
                   <table className='table table-hover-animation mb-0'>
                     <tbody>
-                      <tr>
-                        <th className='row'>Alison A. Tucker, MD</th>
+                    <QueryRenderer
+                  query={{
+                    "measures": [
+                      "Physician.countTopdoctor"
+                    ],
+                    "timeDimensions": [
+                      {
+                        "dimension": "Physician.createdAt"
+                      }
+                    ],
+                    "order": {
+                      "Physician.countTopdoctor": "desc"
+                    },
+                    "dimensions": [
+                      "Physician.topPhysician"
+                    ],
+                    "filters": []
+                  }}
+                 render={({ resultSet }) => {
+                    if (!resultSet) { return 'Loading...'; }
+                    return(
+                    <>
+                      
+                      { show === true ? 
+                      resultSet.loadResponse.results[0].data.map( v=> 
+                        <tr>
+                        <th className='row'>{v["Physician.topPhysician"]}</th>
                         <td className='text-right'>1,997</td>
-                      </tr>
+                        </tr>)
+                      :
+                      resultSet.loadResponse.results[0].data.slice(9).map( v=> 
                       <tr>
-                        <th className='row'>Brent Duncan, MD</th>
-                        <td className='text-right'>1,232</td>
+                      <th className='row'>{v["Physician.topPhysician"]}</th>
+                      <td className='text-right'>1,997</td>
                       </tr>
-                      <tr>
-                        <th className='row'>Christina M. Breit, MD</th>
-                        <td className='text-right'>1,201</td>
-                      </tr>
-                      <tr>
-                        <th className='row'>Dana L. Dougherty, MD</th>
-                        <td className='text-right'>1,001</td>
-                      </tr>
-                      <tr>
-                        <th className='row'>Donna Head, APRN</th>
-                        <td className='text-right'>965</td>
-                      </tr>
-                      <tr>
-                        <th className='row'>Alison A. Tucker, MD</th>
-                        <td className='text-right'>955</td>
-                      </tr>
+                        )}
+                      
+                    </>) 
+                  }}/>
+                      
                     </tbody>
                   </table>
                 </div>
                 <div className='card-body'>
-                  <a href='/' className='card-link'>
-                    <small>View All</small>
+                  <a onClick={() => setShow(!show)} className='card-link'>
+                    {show === true ? 
+                    <small>Close</small>: 
+                    <small>View All</small> }
                   </a>
                 </div>
               </div>
@@ -161,13 +244,58 @@ const Dashboard = ({ onClick, ariaExpanded }) => {
           <Col md={3} className='mb-3 mb-md-0'>
             <div className='card rounded-lg-2 shadow-sm'>
               <div className='card-content'>
+              <div className='card-body text-center'>
+          <QueryRenderer
+                  query={{
+                    "measures": [
+                      "TotalReasons.TotalOfficeVisits"
+                    ],
+                    "timeDimensions": [
+                      {
+                        "dimension": "TotalReasons.EventDate"
+                      }
+                    ],
+                    "order": {},
+                    "dimensions": [],
+                    "filters": []
+                  }}
+                 render={({ resultSet }) => {
+                    if (!resultSet) { return 'Loading...'; }
+                 return(
+                 <div className='text-center'>
+                    <h4 className='text-success mb-0'>{resultSet.loadResponse.results[0].data[0]["TotalReasons.TotalOfficeVisits"]}</h4>
+                        <h6><small>Office</small></h6>
+                             </div>)}}/>
+                 </div>
+              </div>
+            </div>
+          </Col>
+          <Col md={3} className='mb-3 mb-md-0'>
+            <div className='card rounded-lg-2 shadow-sm'>
+              <div className='card-content'>
                 <div className='card-body text-center'>
-                  <div className='text-center'>
-                    <h4 className='text-success mb-0'>206</h4>
-                    <h6>
-                      <small>Office</small>
-                    </h6>
-                  </div>
+                <QueryRenderer
+                  query={{
+                    "measures": [
+                      "TotalReasons.TotalSick"
+                    ],
+                    "timeDimensions": [
+                      {
+                        "dimension": "TotalReasons.EventDate"
+                      }
+                    ],
+                    "order": {},
+                    "dimensions": [],
+                    "filters": []
+                  }
+                  }
+                 render={({ resultSet }) => {
+                    if (!resultSet) { return 'Loading...'; }
+                 return(
+                 <div className='text-center'>
+                    <h4 className='text-warning mb-0'>{resultSet.loadResponse.results[0].data[0]["TotalReasons.TotalSick"]}</h4>
+                        <h6><small>Sick</small></h6>
+                             </div>)}}/>
                 </div>
               </div>
             </div>
@@ -176,12 +304,27 @@ const Dashboard = ({ onClick, ariaExpanded }) => {
             <div className='card rounded-lg-2 shadow-sm'>
               <div className='card-content'>
                 <div className='card-body text-center'>
-                  <div className='text-center'>
-                    <h4 className='text-warning mb-0'>143</h4>
-                    <h6>
-                      <small>Sick</small>
-                    </h6>
-                  </div>
+                <QueryRenderer
+                  query={{
+                    "measures": [
+                      "TotalReasons.TotalPhysical"
+                    ],
+                    "timeDimensions": [
+                      {
+                        "dimension": "TotalReasons.EventDate"
+                      }
+                    ],
+                    "order": {},
+                    "dimensions": [],
+                    "filters": []
+                  }}
+                 render={({ resultSet }) => {
+                    if (!resultSet) { return 'Loading...'; }
+                 return(
+                 <div className='text-center'>
+                    <h4 className='text-primary mb-0'>{resultSet.loadResponse.results[0].data[0]["TotalReasons.TotalPhysical"]}</h4>
+                        <h6><small>Physical</small></h6>
+                             </div>)}}/>
                 </div>
               </div>
             </div>
@@ -190,26 +333,30 @@ const Dashboard = ({ onClick, ariaExpanded }) => {
             <div className='card rounded-lg-2 shadow-sm'>
               <div className='card-content'>
                 <div className='card-body text-center'>
-                  <div className='text-center'>
-                    <h4 className='text-primary mb-0'>132</h4>
-                    <h6>
-                      <small>Physical</small>
-                    </h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col md={3} className='mb-3 mb-md-0'>
-            <div className='card rounded-lg-2 shadow-sm'>
-              <div className='card-content'>
-                <div className='card-body text-center'>
-                  <div className='text-center'>
-                    <h4 className='text-danger mb-0'>0</h4>
-                    <h6>
-                      <small>NGood Health</small>
-                    </h6>
-                  </div>
+                <QueryRenderer
+                  query={
+                    {
+                      "measures": [
+                        "TotalReasons.TotalNGoodHealth"
+                      ],
+                      "timeDimensions": [
+                        {
+                          "dimension": "TotalReasons.EventDate"
+                        }
+                      ],
+                      "order": {},
+                      "dimensions": [],
+                      "filters": []
+                    }}
+                 render={({ resultSet }) => {
+                    if (!resultSet) { return 'Loading...'; }
+                 return(
+                 <div className='text-center'>
+                   {console.log(resultSet)}
+                    <h4 className='text-danger mb-0'>{resultSet.loadResponse.results[0].data[0]["TotalReasons.TotalNGoodHealth"] === null ? 0 : resultSet.loadResponse.results[0].data[0]["TotalReasons.TotalNGoodHealth"]}</h4>
+                        <h6><small>N Good Health</small></h6>
+                             </div>)}}/>
+                  
                 </div>
               </div>
             </div>
